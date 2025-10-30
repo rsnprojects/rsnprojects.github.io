@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>info1</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .image-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .image-container img {
+      width: 60%;
+      max-width: 500px;
+      border-radius: 10px;
+    }
+    pre {
+      background-color: #1b1b1b;
+      padding: 20px;
+      border-radius: 10px;
+      overflow-x: auto;
+    }
+  </style>
+    <link rel="icon" href="favicon.jpg" type="image/png">
+</head>
+ 
+<body>
+
+<div class="image-container">
+  <img src="photo1.jpg" alt="Акс">
+</div>
+
+<h2>Project code</h2>
+
+<pre>
+#include &lt;WiFi.h&gt;
+const char* ssid = "ESP32-LED";
+const char* password = "12345678";
+WiFiServer server(80);
+const int ledPin = 2;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(ledPin, OUTPUT);
+  WiFi.softAP(ssid, password);
+  IPAddress IP = WiFi.softAPIP();
+  Serial.print("Access Point IP: ");
+  Serial.println(IP);
+  server.begin();
+}
+
+void loop() {
+  WiFiClient client = server.available();
+  if (client) {
+    Serial.println("New Client Connected.");
+    String currentLine = "";
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+        Serial.write(c);
+        if (c == '\n') {
+          if (currentLine.length() == 0) {
+            client.println("HTTP/1.1 200 OK");
+            client.println("Content-type:text/html");
+            client.println();
+            client.println("&lt;h1&gt;ESP32 LED Control&lt;/h1&gt;");
+            client.println("&lt;p&gt;&lt;a href=\"/LED_ON\"&gt;Turn LED ON&lt;/a&gt;&lt;/p&gt;");
+            client.println("&lt;p&gt;&lt;a href=\"/LED_OFF\"&gt;Turn LED OFF&lt;/a&gt;&lt;/p&gt;");
+            client.println();
+            break;
+          } else {
+            if (currentLine.indexOf("GET /LED_ON") >= 0) {
+              digitalWrite(ledPin, HIGH);
+            }
+            if (currentLine.indexOf("GET /LED_OFF") >= 0) {
+              digitalWrite(ledPin, LOW);
+            }
+            currentLine = "";
+          }
+        } else if (c != '\r') {
+          currentLine += c;
+        }
+      }
+    }
+    client.stop();
+    Serial.println("Client Disconnected.");
+  }
+}
+</pre>
+
+</body>
+ <!-- video -->
+<section class="video-section">
+  <div class="video-container">
+    <iframe 
+      width="100%" 
+      height="500" 
+      src="https://www.youtube.com/Mr8L4IVV6TVx3rX" 
+      title="YouTube video player" 
+      frameborder="0" 
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+      allowfullscreen>
+    </iframe>
+  </div>
+</section>
+</html>

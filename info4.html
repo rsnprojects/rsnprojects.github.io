@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>info4</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .image-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .image-container img {
+      width: 60%;
+      max-width: 500px;
+      border-radius: 10px;
+    }
+    pre {
+      background-color: #1b1b1b;
+      padding: 20px;
+      border-radius: 10px;
+      overflow-x: auto;
+    }
+  </style>
+    <link rel="icon" href="favicon.jpg" type="image/png">
+</head>
+<body>
+
+<div class="image-container">
+  <img src="photo4.jpg" alt="Акс">
+</div>
+
+<h2>Project code</h2>
+
+<pre>
+
+<pre><code>
+#include &lt;WiFi.h&gt;
+#include &lt;WebServer.h&gt;
+
+// WiFi Access Point name and password
+const char* ssid = "ESP32-Access-Point";
+const char* password = "12345678";
+
+WebServer server(80);
+
+// LED pin definitions
+const int ledLeft = 2;    // Left
+const int ledRight = 4;   // Right
+const int ledUp = 5;      // Up
+const int ledDown = 18;   // Down
+
+void setup() {
+  Serial.begin(115200);
+
+  // Set LED pins as OUTPUT
+  pinMode(ledLeft, OUTPUT);
+  pinMode(ledRight, OUTPUT);
+  pinMode(ledUp, OUTPUT);
+  pinMode(ledDown, OUTPUT);
+
+  // Initialize all LEDs to OFF
+  digitalWrite(ledLeft, LOW);
+  digitalWrite(ledRight, LOW);
+  digitalWrite(ledUp, LOW);
+  digitalWrite(ledDown, LOW);
+
+  // Start WiFi Access Point
+  WiFi.softAP(ssid, password);
+  Serial.println("WiFi Access Point is active");
+  Serial.println(WiFi.softAPIP());
+
+  // Serve the web page
+  server.on("/", HTTP_GET, []() {
+    server.send(200, "text/html", R&quot;rawliteral(
+      &lt;!DOCTYPE html&gt;
+      &lt;html lang=&quot;en&quot;&gt;
+      &lt;head&gt;
+        &lt;meta charset=&quot;UTF-8&quot;&gt;
+        &lt;title&gt;LED Control&lt;/title&gt;
+        &lt;style&gt;
+          body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+          }
+          .row {
+            display: flex;
+            justify-content: center;
+          }
+          button {
+            width: 100px;
+            height: 100px;
+            font-size: 40px;
+            border: none;
+            margin: 10px;
+            color: white;
+            border-radius: 10px;
+          }
+          .up { background-color: red; }
+          .down { background-color: yellow; color: black; }
+          .left { background-color: green; }
+          .right { background-color: blue; }
+        &lt;/style&gt;
+        &lt;script&gt;
+          function sendRequest(path) {
+            fetch(path);
+          }
+        &lt;/script&gt;
+      &lt;/head&gt;
+      &lt;body&gt;
+        &lt;div class=&quot;row&quot;&gt;
+          &lt;button class=&quot;up&quot; onmousedown=&quot;sendRequest('/flash/up')&quot;&gt;&amp;#8593;&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;row&quot;&gt;
+          &lt;button class=&quot;left&quot; onmousedown=&quot;sendRequest('/flash/left')&quot;&gt;&amp;#8592;&lt;/button&gt;
+          &lt;button class=&quot;right&quot; onmousedown=&quot;sendRequest('/flash/right')&quot;&gt;&amp;#8594;&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;row&quot;&gt;
+          &lt;button class=&quot;down&quot; onmousedown=&quot;sendRequest('/flash/down')&quot;&gt;&amp;#8595;&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/body&gt;
+      &lt;/html&gt;
+    )rawliteral&quot;);
+  });
+
+  // Handle LED flash routes
+  server.on("/flash/left", []() { flashLed(ledLeft); server.send(200, "text/plain", "Left flashed"); });
+  server.on("/flash/right", []() { flashLed(ledRight); server.send(200, "text/plain", "Right flashed"); });
+  server.on("/flash/up", []() { flashLed(ledUp); server.send(200, "text/plain", "Up flashed"); });
+  server.on("/flash/down", []() { flashLed(ledDown); server.send(200, "text/plain", "Down flashed"); });
+
+  server.begin();
+}
+
+void loop() {
+  server.handleClient();
+}
+
+// Flash LED for 100 milliseconds
+void flashLed(int pin) {
+  digitalWrite(pin, HIGH);
+  delay(100); // Stay ON for 100ms
+  digitalWrite(pin, LOW);
+}
+</code></pre>
+</pre>
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>info2</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .image-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .image-container img {
+      width: 60%;
+      max-width: 500px;
+      border-radius: 10px;
+    }
+    pre {
+      background-color: #1b1b1b;
+      padding: 20px;
+      border-radius: 10px;
+      overflow-x: auto;
+    }
+  </style>
+    <link rel="icon" href="favicon.jpg" type="image/png">
+</head>
+<body>
+
+<div class="image-container">
+  <img src="photo2.jpg" alt="Акс">
+</div>
+
+<h2>Project code</h2>
+
+<pre>
+// Pins for each LED
+int redLed = 2;
+int yellowLed = 3;
+int greenLed = 4;
+
+void setup() {
+  pinMode(redLed, OUTPUT);   // Set red LED pin as output
+  pinMode(yellowLed, OUTPUT); // Set yellow LED pin as output
+  pinMode(greenLed, OUTPUT); // Set green LED pin as output
+}
+
+void loop() {
+  // Turn on green LED
+  digitalWrite(greenLed, HIGH);
+  delay(5000); // Green stays on for 5 seconds
+
+  // Turn off green, turn on yellow
+  digitalWrite(greenLed, LOW);
+  digitalWrite(yellowLed, HIGH);
+  delay(2000); // Yellow stays on for 2 seconds
+
+  // Turn off yellow, turn on red
+  digitalWrite(yellowLed, LOW);
+  digitalWrite(redLed, HIGH);
+  delay(5000); // Red stays on for 5 seconds
+
+  // Turn off red
+  digitalWrite(redLed, LOW);
+}
+</pre>
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>info5</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .image-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .image-container img {
+      width: 60%;
+      max-width: 500px;
+      border-radius: 10px;
+    }
+    pre {
+      background-color: #1b1b1b;
+      padding: 20px;
+      border-radius: 10px;
+      overflow-x: auto;
+    }
+  </style>
+    <link rel="icon" href="favicon.jpg" type="image/png">
+</head>
+<body>
+
+<div class="image-container">
+  <img src="photo5.jpg" alt="Акс">
+</div>
+
+<h2>Project code</h2>
+
+<pre>
+int redLED = 8;      // Pin for red LED
+int blueLED = 9;     // Pin for blue LED
+
+void setup() {
+  pinMode(redLED, OUTPUT);
+  pinMode(blueLED, OUTPUT);
+}
+
+void loop() {
+  int delayTime = 100; // Delay time between flashes
+
+  // Blink red LED twice
+  for (int i = 0; i < 2; i++) {
+    digitalWrite(redLED, HIGH);
+    digitalWrite(blueLED, LOW);
+    delay(delayTime);
+    digitalWrite(redLED, LOW);
+    delay(delayTime);
+  }
+
+  // Blink blue LED twice
+  for (int i = 0; i < 2; i++) {
+    digitalWrite(redLED, LOW);
+    digitalWrite(blueLED, HIGH);
+    delay(delayTime);
+    digitalWrite(blueLED, LOW);
+    delay(delayTime);
+  }
+}
+</pre>
+
+</body>
+</html>

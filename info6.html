@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>info6</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .image-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .image-container img {
+      width: 60%;
+      max-width: 500px;
+      border-radius: 10px;
+    }
+    pre {
+      background-color: #1b1b1b;
+      padding: 20px;
+      border-radius: 10px;
+      overflow-x: auto;
+    }
+  </style>
+    <link rel="icon" href="favicon.jpg" type="image/png">
+</head>
+<body>
+
+<div class="image-container">
+  <img src="photo6.jpg" alt="foto">
+</div>
+
+<h2>Project code</h2>
+
+<pre>
+
+<pre><code>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET    -1
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+#define TRIG_PIN 9
+#define ECHO_PIN 10
+
+void setup() {
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+
+  Serial.begin(9600);
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    Serial.println(F("OLED Not Found"));
+    while (true);
+  }
+
+  display.clearDisplay();
+  display.setTextSize(2); // Increase text size for numbers
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.display();
+}
+
+void loop() {
+  long duration;
+  float distance_cm;
+
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  duration = pulseIn(ECHO_PIN, HIGH);
+  distance_cm = duration * 0.034 / 2;
+
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.print(distance_cm, 1); // 1 digit after the decimal point
+  display.print(" cm");
+  display.display();
+
+  delay(500);
+}
+</code></pre>
+</pre>
+
+</body>
+</html>
