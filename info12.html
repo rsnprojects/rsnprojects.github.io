@@ -1,1 +1,231 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MPU6050 project</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .image-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .image-container img {
+      width: 60%;
+      max-width: 500px;
+      border-radius: 10px;
+    }
+    pre {
+      background-color: #1b1b1b;
+      color: #f1f1f1;
+      padding: 20px;
+      border-radius: 10px;
+      overflow-x: auto;
+    }
+    h3 {
+      margin-top: 30px;
+      color: #000000;
+    }
+  </style>
+  <link rel="icon" href="favicon.jpg" type="image/png">
+</head>
+<body>
 
+  <div class="image-container">
+    <img src="photo12.jpg" alt="photo">
+  </div>
+  <div class="image-container">
+    <img src="photo12q.png" alt="photo">
+  </div>
+
+  <h2>
+</h2>
+
+  <h3>Code for ESP32</h3>
+  <pre>
+#include <Wire.h>
+#include <MPU6050.h>
+
+MPU6050 mpu;
+
+float ax, ay, az;
+float pitch, roll;
+
+void setup() {
+  Serial.begin(115200);
+  Wire.begin(21, 22);   // ESP32 I2C
+  mpu.initialize();
+
+  if (!mpu.testConnection()) {
+    Serial.println("MPU6050 ERROR");
+    while (1);
+  }
+}
+
+void loop() {
+  mpu.getAcceleration(&ax, &ay, &az);
+
+  pitch = atan2(ax, sqrt(ay * ay + az * az)) * 180 / PI;
+  roll  = atan2(ay, az) * 180 / PI;
+
+  // Формат барои Processing
+  Serial.print(pitch);
+  Serial.print(",");
+  Serial.println(roll);
+
+  delay(20); // ~50Hz
+}
+
+  <h3>Code for Processing</h3>
+  <pre>
+import processing.serial.*;
+
+Serial myPort;
+
+float pitchRaw = 0;
+float rollRaw  = 0;
+
+float pitch = 0;
+float roll  = 0;
+
+float alpha = 0.08;
+
+int R = 200;
+
+void setup() {
+  size(600, 600);
+  smooth(8);
+
+  println(Serial.list());
+  myPort = new Serial(this, Serial.list()[0], 115200);
+  myPort.bufferUntil('\n');
+}
+
+void draw() {
+  background(15);
+  translate(width/2, height/2);
+
+  // smoothing
+  pitch += (pitchRaw - pitch) * alpha;
+  roll  += (rollRaw  - roll ) * alpha;
+
+  // ================= MOVING PART =================
+  push();
+  clip(-R, -R, R*2, R*2);
+
+  pushMatrix();
+  rotate(radians(-roll));
+
+  float p = pitch * 4;
+
+  // SKY
+  noStroke();
+  fill(70, 140, 200);
+  rect(-600, -600 + p, 1200, 600);
+
+  // GROUND
+  fill(160, 100, 60);
+  rect(-600, p, 1200, 600);
+
+  // HORIZON
+  stroke(255, 220, 0);
+  strokeWeight(4);
+  line(-250, p, 250, p);
+
+  // ===== PITCH LADDER =====
+  stroke(255);
+  strokeWeight(2);
+  textSize(12);
+  textAlign(CENTER, CENTER);
+
+  for (int deg = -30; deg <= 30; deg += 5) {
+    if (deg == 0) continue;
+
+    float y = p + deg * 4;
+
+    if (abs(y) < R - 20) {
+      float len = (deg % 10 == 0) ? 120 : 60;
+
+      // line
+      line(-len/2, y, len/2, y);
+
+      // numbers only every 10°
+      if (deg % 10 == 0) {
+        fill(255);
+        text(abs(deg), -len/2 - 15, y);
+        text(abs(deg),  len/2 + 15, y);
+        noFill();
+      }
+    }
+  }
+
+  popMatrix();
+  noClip();
+  pop();
+
+  // ================= STATIC SCALE =================
+  drawStaticScale();
+
+  // AIRCRAFT SYMBOL
+  stroke(255, 220, 0);
+  strokeWeight(4);
+  line(-30, 0, 30, 0);
+  line(0, 0, 0, 18);
+}
+
+void drawStaticScale() {
+  // outer ring
+  noFill();
+  stroke(230);
+  strokeWeight(6);
+  ellipse(0, 0, R*2, R*2);
+
+  // roll ticks & numbers
+  stroke(220);
+  strokeWeight(3);
+  textAlign(CENTER, CENTER);
+  textSize(14);
+  fill(220);
+
+  for (int a = -90; a <= 90; a += 10) {
+    float ang = radians(a - 90);
+
+    float x1 = cos(ang) * (R - 10);
+    float y1 = sin(ang) * (R - 10);
+    float x2 = cos(ang) * (R - (a % 30 == 0 ? 30 : 20));
+    float y2 = sin(ang) * (R - (a % 30 == 0 ? 30 : 20));
+
+    line(x1, y1, x2, y2);
+
+    if (a % 30 == 0 && a != 0) {
+      float xt = cos(ang) * (R - 45);
+      float yt = sin(ang) * (R - 45);
+      text(abs(a), xt, yt);
+    }
+  }
+
+  // top triangle
+  fill(255, 220, 0);
+  noStroke();
+  triangle(0, -R + 8, -8, -R + 25, 8, -R + 25);
+}
+
+void serialEvent(Serial myPort) {
+  String data = myPort.readStringUntil('\n');
+  if (data != null) {
+    data = trim(data);
+    String[] v = split(data, ',');
+    if (v.length == 2) {
+      pitchRaw = float(v[0]);
+      rollRaw  = float(v[1]);
+    }
+  }
+}
+  </pre>
+
+</body>
+</html>
