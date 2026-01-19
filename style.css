@@ -5,19 +5,7 @@ body {
               radial-gradient(circle at 70% 30%, #7c4dff44, transparent 60%),
               #0b1020; /* заминаи торик бо нур */
   color: #eaf1ff;
-}
-.top-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-
-  background-color: black;
-  color: white;
-
-  z-index: 9999;
-  padding: 15px;
-}  
+} 
 header {
   position: relative;
   background: transparent;
