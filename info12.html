@@ -111,7 +111,7 @@ void draw() {
   translate(width/2, height/2);
 
   // smoothing
-  pitch += (pitchRaw - pitch) * alpha;
+  pitch -= (pitchRaw + pitch) * alpha;
   roll  += (rollRaw  - roll ) * alpha;
 
   // ================= MOVING PART =================
